@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eksperimen Kimia</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:radial-gradient(circle at top,#0b3c5d,#061726);
+  color:#fff;
+  min-height:100vh;
+  overflow:hidden;
+}
+
+/* BACKGROUND MOLEKUL */
+.bg{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+}
+.molecule{
+  position:absolute;
+  font-size:28px;
+  opacity:.15;
+  animation:float 12s infinite ease-in-out;
+}
+@keyframes float{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-20px)}
+  100%{transform:translateY(0)}
+}
+
+section{
+  display:none;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:20px;
+}
+section.active{display:flex}
+
+button,.option{
+  background:#4fc3f7;
+  border:none;
+  border-radius:14px;
+  padding:12px 20px;
+  margin:10px;
+  cursor:pointer;
+  color:#000;
+  font-size:16px;
+  max-width:320px;
+  width:100%;
+}
+button:hover,.option:hover{background:#81d4fa}
+
+.boxes{
+  display:flex;
+  gap:16px;
+  margin:25px 0;
+}
+.box{
+  width:70px;height:70px;
+  border:2px solid #fff;
+  font-size:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+textarea{
+  width:100%;
+  max-width:360px;
+  height:120px;
+  border-radius:10px;
+  padding:10px;
+}
+
+.firework{
+  position:fixed;
+  inset:0;
+  background:url("https://i.imgur.com/4M7IWwP.gif") center/cover no-repeat;
+  display:none;
+  pointer-events:none;
+}
+
+.small{opacity:.7;font-size:13px}
+</style>
+</head>
+
+<body>
+
+<!-- BACKGROUND ELEMENT -->
+<div class="bg">
+  <div class="molecule" style="top:10%;left:10%">⚛️</div>
+  <div class="molecule" style="top:30%;left:70%">🧪</div>
+  <div class="molecule" style="top:60%;left:20%">🧬</div>
+  <div class="molecule" style="top:80%;left:80%">⚗️</div>
+</div>
+
+<div class="firework" id="fw"></div>
+
+<audio id="song">
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_6d7d0f91d3.mp3">
+</audio>
+
+<!-- SCENE 1 -->
+<section id="s1" class="active">
+  <h2>Eksperimen Dimulai</h2>
+  <button onclick="next(2)">Mulai</button>
+</section>
+
+<!-- TANGGAL -->
+<section id="s2">
+  <h2>Sekarang tanggal berapa?</h2>
+  <div class="option" onclick="wrong()">A. hari ini 18 januari 2026</div>
+  <div class="option" onclick="wrong()">B. minggu, januari 2026</div>
+  <div class="option" onclick="rightDate()">C. minggu, 18 januari 2026</div>
+</section>
+
+<!-- GAME -->
+<section id="s3">
+  <h2>Menggabungkan Unsur</h2>
+  <div class="boxes">
+    <div class="box" id="b1"></div>
+    <div class="box" id="b2"></div>
+    <div class="box" id="b3"></div>
+  </div>
+  <p>Unsur pertama?</p>
+  <div class="option" onclick="answer('H')">H</div>
+  <div class="option" onclick="fail()">O</div>
+</section>
+
+<section id="s3b">
+  <p>Unsur kedua?</p>
+  <div class="option" onclick="answer('B')">B</div>
+  <div class="option" onclick="fail()">C</div>
+</section>
+
+<section id="s3c">
+  <p>Unsur ketiga?</p>
+  <div class="option" onclick="answer('D')">D</div>
+  <div class="option" onclick="fail()">T</div>
+</section>
+
+<!-- HBD -->
+<section id="s4">
+  <h1>Happy Brojol Day</h1>
+  <h2>Mas Ilham Nur Pambudi</h2>
+  <p>ihihihi makin tua deh</p>
+  <button onclick="next(5)">Catatan diterima</button>
+</section>
+
+<section id="s5">
+  <p id="doa"></p>
+  <button onclick="next(6)">Simpan Catatan</button>
+</section>
+
+<section id="s6">
+  <h3>Dear, my self</h3>
+  <textarea placeholder="Tulis di sini..."></textarea>
+  <button onclick="next(7)">Akhiri Eksperimen</button>
+</section>
+
+<section id="s7">
+  <p>Apakah Anda yakin dengan pilihan berikut?</p>
+  <button onclick="next(8)">Ya</button>
+</section>
+
+<section id="s8">
+  <h3>Pembayaran untuk pembuatan web</h3>
+  <div class="option" onclick="thanks()">A. GoPay</div>
+  <div class="option" onclick="thanks()">B. Boneka lucu</div>
+  <div class="option" onclick="thanks()">C. Barang biru/cream</div>
+  <div class="option" onclick="thanks()">D. Membelikan 2 novel</div>
+</section>
+
+<script>
+let i=0,wrongCount=0;
+const doaText=`Semoga hidupmu stabil,
+tidak mudah bereaksi negatif,
+dan selalu menemukan kebahagiaan
+di setiap proses.`;
+
+function next(n){
+ document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+ document.getElementById("s"+n).classList.add("active");
+}
+
+function wrong(){
+ alert(wrongCount++%2
+ ?"gimana sih kok masih salah"
+ :"pede banget ini jawabannya");
+}
+
+function rightDate(){
+ alert("pas bener bener ga ya, lanjut game dulu deh");
+ next(3);
+}
+
+function fail(){wrong()}
+
+function answer(h){
+ document.getElementById("b"+(++i)).innerText=h;
+ if(i===1) next("3b");
+ if(i===2) next("3c");
+ if(i===3){
+  document.getElementById("fw").style.display="block";
+  document.getElementById("song").play();
+  setTimeout(()=>next(4),1500);
+ }
+}
+
+let idx=0;
+setInterval(()=>{
+ let d=document.getElementById("doa");
+ if(d && idx<doaText.length) d.innerHTML+=doaText[idx++];
+},60);
+
+function thanks(){
+ alert("Terima kasih, ditunggu pas liburan ya");
+}
+</script>
+
+</body>
+</html>
